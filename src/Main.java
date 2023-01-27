@@ -1,9 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Types;
+import java.sql.*;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Double.parseDouble;
@@ -15,9 +12,12 @@ public class Main {
         String username="root";
         String password="E11235813e";
 
+        // Run if DB isn't initialized
+        //InitializeHighschool(jdbcURL, username, password);
+        //InitializeFriends(jdbcURL, username, password);
 
-        InitializeHighschool(jdbcURL, username, password);
-        InitializeFriends(jdbcURL, username, password);
+        // View Student ID and their Average Grade
+        ViewAvgGrade(jdbcURL, username, password);
     }
 
     public static void InitializeHighschool(String jdbcURL, String username, String password)
@@ -143,5 +143,28 @@ public class Main {
             System.out.println("studentFriendships already initialized!");
 
         }
+    }
+
+    public static void ViewAvgGrade(String jdbcURL, String username, String password) {
+            try {
+                Connection connection = DriverManager.getConnection(jdbcURL, username, password);
+                connection.setAutoCommit(false);
+
+                String sql = "select identification_card, grade_avg from studentsummary ";
+
+                Statement statement = connection.createStatement();
+
+                ResultSet resultSet = statement.executeQuery(sql);
+
+                System.out.println("ID Card     Avg Grade ");
+                while(resultSet.next())
+                {
+                    System.out.println(resultSet.getString(1) + "   " + resultSet.getString(2));
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
     }
 }
