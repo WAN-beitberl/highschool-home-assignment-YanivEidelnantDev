@@ -18,6 +18,9 @@ public class Main {
         //InitializeHighschool(jdbcURL, username, password);
         //InitializeFriends(jdbcURL, username, password);
 
+        // View Student ID and their Average Grade (Section 3)
+        //ViewAvgGrade(jdbcURL, username, password);
+
         Scanner myScanner = new Scanner(System.in);
         String sql = null;
         int Input = 0;
@@ -272,6 +275,29 @@ public class Main {
             {
                 Input5(jdbcURL, username, password, friend_id, FALSE);
                 Input5(jdbcURL, username, password, other_friend_id, FALSE);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public static void ViewAvgGrade(String jdbcURL, String username, String password) {
+        try {
+            Connection connection = DriverManager.getConnection(jdbcURL, username, password);
+            connection.setAutoCommit(false);
+
+            String sql = "select identification_card, grade_avg from studentsummary ";
+
+            Statement statement = connection.createStatement();
+
+            ResultSet resultSet = statement.executeQuery(sql);
+
+            System.out.println("ID Card     Avg Grade ");
+            while(resultSet.next())
+            {
+                System.out.println(resultSet.getString(1) + "   " + resultSet.getString(2));
             }
         }
         catch (Exception e)
