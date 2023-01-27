@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.sql.*;
+import java.util.Scanner;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.Double.parseDouble;
@@ -16,8 +17,69 @@ public class Main {
         //InitializeHighschool(jdbcURL, username, password);
         //InitializeFriends(jdbcURL, username, password);
 
-        // View Student ID and their Average Grade
-        ViewAvgGrade(jdbcURL, username, password);
+        Scanner myScanner = new Scanner(System.in);
+        String sql = null;
+        int Input = 0;
+        int ID_Card_Input = 0;
+        System.out.println("Welcome to the Student Database!");
+        // Main while loop
+        while(true)
+        {
+            System.out.println("\nPress 1 to show the average grade of the school");
+            System.out.println("Press 2 to show the average grade of boys");
+            System.out.println("Press 3 to show the average grade of girls");
+            System.out.println("Press 4 to show the average height of boys above 2m which have purple cars");
+            System.out.println("Press 5 to show a student's first and second friend circle");
+            System.out.println("Press 6 to show the percent of popular and lonely students");
+            System.out.println("Press 7 to show a specific student's average grade");
+            System.out.println("Press 8 to exit the program");
+            System.out.print("> ");
+            Input = myScanner.nextInt();
+
+            switch (Input){
+                case 1:
+                    sql = "select AVG(grade_avg) from studentsummary";
+                    System.out.print("The average grade of the school is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    break;
+                case 2:
+                    sql = "select AVG(grade_avg) from studentsummary where gender = 'Male'";
+                    System.out.print("The average grade of boys is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    break;
+                case 3:
+                    sql = "select AVG(grade_avg) from studentsummary where gender = 'Female'";
+                    System.out.print("The average grade of girls is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    break;
+                case 4:
+                    sql = "select AVG(cm_heigth) from studentsummary where gender = 'Male' AND cm_heigth >= 200 AND has_car = TRUE AND car_color = 'Purple'";
+                    System.out.print("The average height of boys above 2m which have purple cars is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    break;
+                case 5:
+                    System.out.println("Please enter student ID Card");
+                    ID_Card_Input = myScanner.nextInt();
+                    sql = "select grade_avg from studentfriendships where identification_card = " + ID_Card_Input;
+                    System.out.print("The average grade is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    System.out.println("Please enter student ID Card");
+                    ID_Card_Input = myScanner.nextInt();
+                    sql = "select grade_avg from studentsummary where identification_card = " + ID_Card_Input;
+                    System.out.print("The average grade is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    break;
+                case 8:
+                    System.out.println("Thank you for using the Student Database!");
+                    return;
+                default:
+                    System.out.println("Illegal Input!");
+            }
+        }
     }
 
     public static void InitializeHighschool(String jdbcURL, String username, String password)
@@ -145,21 +207,18 @@ public class Main {
         }
     }
 
-    public static void ViewAvgGrade(String jdbcURL, String username, String password) {
+    public static void GeneralSql(String jdbcURL, String username, String password, String sql) {
             try {
                 Connection connection = DriverManager.getConnection(jdbcURL, username, password);
                 connection.setAutoCommit(false);
-
-                String sql = "select identification_card, grade_avg from studentsummary ";
 
                 Statement statement = connection.createStatement();
 
                 ResultSet resultSet = statement.executeQuery(sql);
 
-                System.out.println("ID Card     Avg Grade ");
                 while(resultSet.next())
                 {
-                    System.out.println(resultSet.getString(1) + "   " + resultSet.getString(2));
+                    System.out.format("%.5s",resultSet.getString(1) + "\n");
                 }
             }
             catch (Exception e)
