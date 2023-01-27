@@ -1,11 +1,12 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.lang.module.ModuleFinder;
 import java.sql.*;
 import java.util.Scanner;
 
+import static java.lang.Boolean.*;
 import static java.lang.Integer.parseInt;
 import static java.lang.Double.parseDouble;
-import static java.lang.Boolean.parseBoolean;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,12 +26,12 @@ public class Main {
         // Main while loop
         while(true)
         {
-            System.out.println("\nPress 1 to show the average grade of the school");
+            System.out.println("\n\nPress 1 to show the average grade of the school");
             System.out.println("Press 2 to show the average grade of boys");
             System.out.println("Press 3 to show the average grade of girls");
             System.out.println("Press 4 to show the average height of boys above 2m which have purple cars");
             System.out.println("Press 5 to show a student's first and second friend circle");
-            System.out.println("Press 6 to show the percent of popular and lonely students");
+            System.out.println("Press 6 to show the percentage of popular and lonely students");
             System.out.println("Press 7 to show a specific student's average grade");
             System.out.println("Press 8 to exit the program");
             System.out.print("> ");
@@ -56,15 +57,27 @@ public class Main {
                     sql = "select AVG(cm_heigth) from studentsummary where gender = 'Male' AND cm_heigth >= 200 AND has_car = TRUE AND car_color = 'Purple'";
                     System.out.print("The average height of boys above 2m which have purple cars is = ");
                     GeneralSql(jdbcURL, username, password, sql);
+                    System.out.print("cm");
                     break;
                 case 5:
                     System.out.println("Please enter student ID Card");
                     ID_Card_Input = myScanner.nextInt();
-                    sql = "select grade_avg from studentfriendships where identification_card = " + ID_Card_Input;
-                    System.out.print("The average grade is = ");
-                    GeneralSql(jdbcURL, username, password, sql);
+                    System.out.print("The friend circle is =");
+                    Input5(jdbcURL, username, password, ID_Card_Input, TRUE);
                     break;
                 case 6:
+                    sql = "SELECT COUNT(DISTINCT id) / (SELECT COUNT(*) FROM studentfriendships) * 100 AS popular_percentage\n" +
+                            "FROM studentfriendships\n" +
+                            "WHERE friend_id IS NOT NULL AND other_friend_id IS NOT NULL;";
+                    System.out.print("Percentage of popular people is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    System.out.print("%");
+                    sql = "SELECT COUNT(DISTINCT id) / (SELECT COUNT(*) FROM studentfriendships) * 100 AS lonely_percentage\n" +
+                            "FROM studentfriendships\n" +
+                            "WHERE friend_id IS NULL AND other_friend_id IS NULL;\n";
+                    System.out.print("\nPercentage of lonely people is = ");
+                    GeneralSql(jdbcURL, username, password, sql);
+                    System.out.print("%");
                     break;
                 case 7:
                     System.out.println("Please enter student ID Card");
@@ -218,12 +231,52 @@ public class Main {
 
                 while(resultSet.next())
                 {
-                    System.out.format("%.5s",resultSet.getString(1) + "\n");
+                    System.out.format("%.5s",resultSet.getString(1));
                 }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
+    }
+
+    public static void Input5(String jdbcURL, String username, String password, int ID_Card_Input, boolean Modifier) {
+        try {
+            Connection connection = DriverManager.getConnection(jdbcURL, username, password);
+            connection.setAutoCommit(false);
+
+            Statement statement = connection.createStatement();
+
+            String sql = "select friend_id, other_friend_id from studentfriendships where id = " + ID_Card_Input;
+
+            ResultSet resultSet = statement.executeQuery(sql);
+            int friend_id = 0;
+            int other_friend_id = 0;
+            if(resultSet.next())
+            {
+                friend_id = resultSet.getInt(1);
+                other_friend_id = resultSet.getInt(2);
+            }
+
+            if(friend_id != 0)
+            {
+                System.out.print(" " + friend_id);
+            }
+            if(other_friend_id != 0)
+            {
+                System.out.print(" " + other_friend_id);
+            }
+
+            //Run one more time for the second friend circle
+            if(Modifier == TRUE)
+            {
+                Input5(jdbcURL, username, password, friend_id, FALSE);
+                Input5(jdbcURL, username, password, other_friend_id, FALSE);
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }
