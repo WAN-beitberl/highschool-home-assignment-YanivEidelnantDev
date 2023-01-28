@@ -68,13 +68,13 @@ public class Main {
                 case 6:
                     sql = "SELECT COUNT(DISTINCT id) / (SELECT COUNT(*) FROM studentfriendships) * 100 AS popular_percentage\n" +
                             "FROM studentfriendships\n" +
-                            "WHERE friend_id IS NOT NULL AND other_friend_id IS NOT NULL;";
+                            "WHERE friend_id != 0 AND other_friend_id != 0;";
                     System.out.print("Percentage of popular people is = ");
                     GeneralSql(jdbcURL, username, password, sql);
                     System.out.print("%");
-                    sql = "SELECT COUNT(DISTINCT id) / (SELECT COUNT(*) FROM studentfriendships) * 100 AS lonely_percentage\n" +
+                    sql = "SELECT COUNT(DISTINCT id) / (SELECT COUNT(*) FROM studentfriendships) * 100 AS popular_percentage\n" +
                             "FROM studentfriendships\n" +
-                            "WHERE friend_id IS NULL AND other_friend_id IS NULL;\n";
+                            "WHERE friend_id = 0 AND other_friend_id = 0;";
                     System.out.print("\nPercentage of lonely people is = ");
                     GeneralSql(jdbcURL, username, password, sql);
                     System.out.print("%");
@@ -169,7 +169,8 @@ public class Main {
         }
     }
 
-    public static void InitializeFriends(String jdbcURL, String username, String password) {
+    public static void InitializeFriends(String jdbcURL, String username, String password)
+    {
         String filePath = "C:\\Users\\yaniv\\Downloads\\highschool_sql_assignment\\highschool_sql_assignment\\highschool_friendships2.csv";
 
         int batchSize = 20;
@@ -195,13 +196,13 @@ public class Main {
 
                 statement.setInt(1, parseInt(id));
                 if(friend_id == "") {
-                    statement.setNull(2, Types.NULL);
+                    statement.setInt(2, 0);
                 }
                 else {
                     statement.setInt(2, parseInt(friend_id));
                 }
                 if(other_friend_id == "") {
-                    statement.setNull(3, Types.NULL);
+                    statement.setInt(3, 0);
                 }
                 else {
                     statement.setInt(3, parseInt(other_friend_id));
