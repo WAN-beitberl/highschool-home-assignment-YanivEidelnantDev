@@ -143,7 +143,7 @@ public class Main {
                     statement.setString(10, "Unknown");
                 }
                 else if(has_car.equals("false")) {
-                    statement.setNull(10, Types.NULL);
+                    statement.setString(10, "None");
                 }
                 else {
                     statement.setString(10, car_color);
