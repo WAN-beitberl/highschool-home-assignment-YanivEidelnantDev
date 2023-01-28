@@ -15,11 +15,8 @@ public class Main {
         String password="E11235813e";
 
         // Run if DB isn't initialized
-        //InitializeHighschool(jdbcURL, username, password);
-        //InitializeFriends(jdbcURL, username, password);
-
-        // View Student ID and their Average Grade (Section 3)
-        //ViewAvgGrade(jdbcURL, username, password);
+        InitializeHighschool(jdbcURL, username, password);
+        InitializeFriends(jdbcURL, username, password);
 
         Scanner myScanner = new Scanner(System.in);
         String sql = null;
@@ -142,7 +139,10 @@ public class Main {
                 statement.setInt(7, parseInt(cm_height));
                 statement.setInt(8, parseInt(age));
                 statement.setBoolean(9, parseBoolean(has_car));
-                if(car_color == "") {
+                if(car_color.equals("") && has_car.equals("true")) {
+                    statement.setString(10, "Unknown");
+                }
+                else if(has_car.equals("false")) {
                     statement.setNull(10, Types.NULL);
                 }
                 else {
@@ -275,29 +275,6 @@ public class Main {
             {
                 Input5(jdbcURL, username, password, friend_id, FALSE);
                 Input5(jdbcURL, username, password, other_friend_id, FALSE);
-            }
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public static void ViewAvgGrade(String jdbcURL, String username, String password) {
-        try {
-            Connection connection = DriverManager.getConnection(jdbcURL, username, password);
-            connection.setAutoCommit(false);
-
-            String sql = "select identification_card, grade_avg from studentsummary ";
-
-            Statement statement = connection.createStatement();
-
-            ResultSet resultSet = statement.executeQuery(sql);
-
-            System.out.println("ID Card     Avg Grade ");
-            while(resultSet.next())
-            {
-                System.out.println(resultSet.getString(1) + "   " + resultSet.getString(2));
             }
         }
         catch (Exception e)
