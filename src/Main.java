@@ -14,7 +14,7 @@ public class Main {
         String username="root";
         String password="E11235813e";
 
-        // Run if DB isn't initialized
+        // Run if Database isn't initialized
         InitializeHighschool(jdbcURL, username, password);
         InitializeFriends(jdbcURL, username, password);
 
